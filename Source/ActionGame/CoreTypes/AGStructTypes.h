@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "GameplayTagContainer.h"
-
+#include "ScalableFloat.h"
 #include "AGStructTypes.generated.h"
 
 class UAGHeroGameplayAbility;
@@ -34,4 +34,7 @@ struct FAGHeroWeaponData
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (TitleProperty = "InputTag"))
 	TArray<FAGHeroAbilitySet> DefaultWeaponAbilities;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FScalableFloat WeaponBaseDamage;
 };

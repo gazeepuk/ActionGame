@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+#include "CoreTypes/AGEnumTypes.h"
 #include "AGGameplayAbility.generated.h"
 
 
@@ -34,9 +35,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AGAbility")
 	EAGAbilityActivationPolicy AbilityActivationPolicy{EAGAbilityActivationPolicy::OnTriggered};
 
-	UFUNCTION(BlueprintPure, Category = "Character|Ability")
+	UFUNCTION(BlueprintPure, Category = "ActionGame|Ability")
 	UPawnCombatComponent* GetPawnCombatComponentFromActorInfo() const;
 
-	UFUNCTION(BlueprintPure, Category = "Character|Ability")
-	UAGAbilitySystemComponent* GetAGAbilitySystemComponentFromAvatarActor() const;	
+	UFUNCTION(BlueprintPure, Category = "ActionGame|Ability")
+	UAGAbilitySystemComponent* GetAGAbilitySystemComponentFromAvatarActor() const;
+
+	FActiveGameplayEffectHandle NativeApplyEffectSpecHandleToTarget(AActor* TargetActor, const FGameplayEffectSpecHandle& InSpecHandle);
+
+	UFUNCTION(BlueprintCallable, Category = "ActionGame|Ability", meta = (DisplayName = "Apply Gameplay Effect Spec Handle To Target Actor", ExpandEnumAsExecs = "OutSuccessType"))
+	FActiveGameplayEffectHandle BP_ApplyEffectSpecHandleToTarget(AActor* TargetActor, const FGameplayEffectSpecHandle& InSpecHandle, EAGSuccessType& OutSuccessType);
+
 };

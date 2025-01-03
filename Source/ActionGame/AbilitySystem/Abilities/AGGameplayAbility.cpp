@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/Abilities/AGGameplayAbility.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AGAbilitySystemComponent.h"
 #include "Components/Combat/PawnCombatComponent.h"
@@ -42,4 +43,24 @@ UPawnCombatComponent* UAGGameplayAbility::GetPawnCombatComponentFromActorInfo() 
 UAGAbilitySystemComponent* UAGGameplayAbility::GetAGAbilitySystemComponentFromAvatarActor() const
 {
 	return Cast<UAGAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent);
+}
+
+FActiveGameplayEffectHandle UAGGameplayAbility::NativeApplyEffectSpecHandleToTarget(AActor* TargetActor,
+	const FGameplayEffectSpecHandle& InSpecHandle)
+{
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+	check(TargetASC);
+	check(InSpecHandle.IsValid());
+
+	return GetAGAbilitySystemComponentFromAvatarActor()->ApplyGameplayEffectSpecToTarget(*InSpecHandle.Data, TargetASC);
+}
+
+FActiveGameplayEffectHandle UAGGameplayAbility::BP_ApplyEffectSpecHandleToTarget(AActor* TargetActor,
+	const FGameplayEffectSpecHandle& InSpecHandle, EAGSuccessType& OutSuccessType)
+{
+	const FActiveGameplayEffectHandle ActiveGameplayEffectHandle = NativeApplyEffectSpecHandleToTarget(TargetActor, InSpecHandle);
+
+	OutSuccessType = ActiveGameplayEffectHandle.WasSuccessfullyApplied() ? EAGSuccessType::Successful : EAGSuccessType::Failed;
+
+	return ActiveGameplayEffectHandle;
 }
