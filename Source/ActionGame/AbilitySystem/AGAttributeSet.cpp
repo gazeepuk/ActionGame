@@ -3,6 +3,8 @@
 
 #include "AbilitySystem/AGAttributeSet.h"
 #include "GameplayEffectExtension.h"
+#include "CoreTypes/AGGameplayTags.h"
+#include "FunctionLibraries/AGFunctionLibrary.h"
 
 UAGAttributeSet::UAGAttributeSet()
 {
@@ -46,10 +48,9 @@ void UAGAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 		
 		//TODO: notify UI
 
-		//TODO: character death
 		if(NewCurrentHealth == 0.f)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s is dead"), *GetNameSafe(GetOwningActor())));
+			UAGFunctionLibrary::AddGameplayTagToActorIfNone(Data.Target.GetAvatarActor(), AGGameplayTags::Shared_Status_Death);
 		}
 	}
 }

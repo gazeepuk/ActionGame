@@ -40,7 +40,10 @@ void UHeroCombatComponent::OnHitTargetActor(AActor* HitActor)
 	FGameplayEventData Data;
 	Data.Instigator = GetOwningPawn();
 	Data.Target = HitActor;
+	
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningPawn(), AGGameplayTags::Shared_Event_MeleeHit, Data);
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningPawn(), AGGameplayTags::Player_Event_HitPause, FGameplayEventData());
 }
 
 void UHeroCombatComponent::OnWeaponPulledFromTargetActor(AActor* InteractingActor)

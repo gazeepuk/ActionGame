@@ -18,6 +18,7 @@ class ACTIONGAME_API UAGFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
+public:
 	static UAGAbilitySystemComponent* NativeGetAGAbilitySystemComponentFromActor(AActor* InActor);
 
 	UFUNCTION(BlueprintCallable, Category = "ActionGame|FunctionLibrary")
