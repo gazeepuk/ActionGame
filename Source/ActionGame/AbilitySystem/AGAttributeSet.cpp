@@ -3,8 +3,11 @@
 
 #include "AbilitySystem/AGAttributeSet.h"
 #include "GameplayEffectExtension.h"
+#include "Components/UI/HeroUIComponent.h"
+#include "Components/UI/PawnUIComponent.h"
 #include "CoreTypes/AGGameplayTags.h"
 #include "FunctionLibraries/AGFunctionLibrary.h"
+#include "Interfaces/PawnUIInterface.h"
 
 UAGAttributeSet::UAGAttributeSet()
 {
@@ -20,11 +23,22 @@ void UAGAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 {
 	Super::PostGameplayEffectExecute(Data);
 
+	if(!CachedPawnUIInterface.IsValid())
+	{
+		CachedPawnUIInterface = TWeakInterfacePtr<IPawnUIInterface>(Data.Target.GetAvatarActor());
+	}
+	checkf(CachedPawnUIInterface.IsValid(), TEXT("%s doesn't implement IPawnInterface"), *GetNameSafe(GetOwningActor()));
+
+	UPawnUIComponent* PawnUIComponent = CachedPawnUIInterface->GetPawnUIComponent();
+	checkf(PawnUIComponent, TEXT("PawnComponent of %s is invalid"), *GetNameSafe(GetOwningActor()));
+	
 	if (Data.EvaluatedData.Attribute == GetCurrentHealthAttribute())
 	{
 		const float NewCurrentHealth = FMath::Clamp(GetCurrentHealth(), 0.f, GetMaxHealth());
 
 		SetCurrentHealth(NewCurrentHealth);
+
+		PawnUIComponent->OnCurrentHealthChanged.Broadcast(GetCurrentHealth() / GetMaxHealth());
 	}
 
 	if(Data.EvaluatedData.Attribute == GetCurrentRageAttribute())
@@ -32,6 +46,11 @@ void UAGAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 		const float NewCurrentRage = FMath::Clamp(GetCurrentRage(), 0.f, GetMaxRage());
 
 		SetCurrentRage(NewCurrentRage);
+
+		if(UHeroUIComponent* HeroUIComponent = CachedPawnUIInterface->GetHeroUIComponent())
+		{
+			HeroUIComponent->OnCurrentHealthChanged.Broadcast(GetCurrentRage() / GetMaxRage());
+		}
 	}
 	
 	if(Data.EvaluatedData.Attribute == GetDamageTakenAttribute())
@@ -46,9 +65,9 @@ void UAGAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 			FString::Printf(TEXT("Old Health: %f, Damage Taken: %f, NewHealth: %f"),
 				OldHealth, DamageDone, GetCurrentHealth()));
 		
-		//TODO: notify UI
+		PawnUIComponent->OnCurrentHealthChanged.Broadcast(GetCurrentHealth() / GetMaxHealth());
 
-		if(NewCurrentHealth == 0.f)
+		if(GetCurrentHealth() == 0.f)
 		{
 			UAGFunctionLibrary::AddGameplayTagToActorIfNone(Data.Target.GetAvatarActor(), AGGameplayTags::Shared_Status_Death);
 		}

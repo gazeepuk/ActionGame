@@ -16,10 +16,11 @@ public class ActionGame : ModuleRules
 			"InputCore",
 			"GameplayTags",
 			"EnhancedInput",
-			"GameplayTasks"
+			"GameplayTasks",
+			"AnimGraphRuntime"
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  });
+		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule" });
 
 		PublicIncludePaths.Add("ActionGame/");
 		

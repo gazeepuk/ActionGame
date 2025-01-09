@@ -8,6 +8,7 @@
 #include "InputActionValue.h"
 #include "AGHeroCharacter.generated.h"
 
+class UHeroUIComponent;
 class UHeroCombatComponent;
 class UDataAsset_InputConfig;
 class UCameraComponent;
@@ -24,6 +25,11 @@ public:
 	//~ Begin IPawnCombatInterface Interface
 	virtual UPawnCombatComponent* GetPawnCombatComponent() const override;
 	//~ End IPawnCombatInterface Interface
+
+	//~ Begin IPawnUIInterface Interface
+	virtual UPawnUIComponent* GetPawnUIComponent() const override;
+	virtual UHeroUIComponent* GetHeroUIComponent() const override;
+	//~ End IPawnUIInterface Interface
 
 protected:
 	//~ Begin APawn Interface
@@ -42,6 +48,9 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta=(AllowPrivateAccess))
 	TObjectPtr<UHeroCombatComponent> HeroCombatComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI", meta=(AllowPrivateAccess))
+	TObjectPtr<UHeroUIComponent> HeroUIComponent;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterData", meta=(AllowPrivateAccess))
 	TObjectPtr<UDataAsset_InputConfig> InputConfigDataAsset;

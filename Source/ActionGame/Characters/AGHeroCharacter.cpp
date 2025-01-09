@@ -11,6 +11,7 @@
 #include "AbilitySystem/AGAbilitySystemComponent.h"
 #include "Components/Combat/HeroCombatComponent.h"
 #include "Components/Input/AGEnhancedInputComponent.h"
+#include "Components/UI/HeroUIComponent.h"
 #include "CoreTypes/AGGameplayTags.h"
 #include "DataAssets/Input/DataAsset_InputConfig.h"
 #include "DataAssets/StartUpData/DataAsset_StartUpDataBase.h"
@@ -39,11 +40,23 @@ AAGHeroCharacter::AAGHeroCharacter()
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 
 	HeroCombatComponent = CreateDefaultSubobject<UHeroCombatComponent>(TEXT("HeroCombatComponent"));
+
+	HeroUIComponent = CreateDefaultSubobject<UHeroUIComponent>(TEXT("HeroUIComponent"));
 }
 
 UPawnCombatComponent* AAGHeroCharacter::GetPawnCombatComponent() const
 {
 	return HeroCombatComponent;
+}
+
+UPawnUIComponent* AAGHeroCharacter::GetPawnUIComponent() const
+{
+	return HeroUIComponent;
+}
+
+UHeroUIComponent* AAGHeroCharacter::GetHeroUIComponent() const
+{
+	return HeroUIComponent;
 }
 
 void AAGHeroCharacter::PossessedBy(AController* NewController)
