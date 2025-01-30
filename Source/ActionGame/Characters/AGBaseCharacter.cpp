@@ -1,10 +1,10 @@
 // replcae later
 
 
-#include "Characters/AGBaseCharacter.h"
-
+#include "AGBaseCharacter.h"
 #include "AbilitySystem/AGAbilitySystemComponent.h"
 #include "AbilitySystem/AGAttributeSet.h"
+#include "MotionWarpingComponent.h"
 
 AAGBaseCharacter::AAGBaseCharacter()
 {
@@ -15,7 +15,9 @@ AAGBaseCharacter::AAGBaseCharacter()
 
 	AGAbilitySystemComponent = CreateDefaultSubobject<UAGAbilitySystemComponent>(TEXT("AGAbilitySystemComponent"));
 	
-	AGAttributeSet = CreateDefaultSubobject<UAGAttributeSet>(TEXT("AGAttributeSet")); 
+	AGAttributeSet = CreateDefaultSubobject<UAGAttributeSet>(TEXT("AGAttributeSet"));
+
+	MotionWarping = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("UMotionWarpingComponent"));
 }
 
 UAbilitySystemComponent* AAGBaseCharacter::GetAbilitySystemComponent() const

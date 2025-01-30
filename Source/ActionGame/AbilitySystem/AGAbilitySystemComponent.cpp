@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/AGAbilitySystemComponent.h"
 #include "AbilitySystem/Abilities/AGGameplayAbility.h"
+#include "AbilitySystem/Abilities/AGHeroGameplayAbility.h"
 
 void UAGAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& InInputTag)
 {
@@ -29,27 +30,27 @@ void UAGAbilitySystemComponent::OnAbilityInputReleased(const FGameplayTag& InInp
 void UAGAbilitySystemComponent::GrantHeroWeaponAbilities(const TArray<FAGHeroAbilitySet>& InDefaultWeaponAbilities,
 	int32 ApplyLevel, TArray<FGameplayAbilitySpecHandle>& OutGrantedAbilitiesSpecHandles)
 {
-	if(InDefaultWeaponAbilities.IsEmpty())
-	{
-		return;
-	}
-
-	for (const FAGHeroAbilitySet& AbilitySet : InDefaultWeaponAbilities)
-	{
-		if(!AbilitySet.IsValid())
+		if(InDefaultWeaponAbilities.IsEmpty())
 		{
-			continue;
+			return;
 		}
 
-		FGameplayAbilitySpec AbilitySpec(AbilitySet.AbilityToGrant);
-		AbilitySpec.SourceObject = GetAvatarActor();
-		AbilitySpec.Level = ApplyLevel;
-		AbilitySpec.DynamicAbilityTags.AddTag(AbilitySet.InputTag);
-		
-		FGameplayAbilitySpecHandle OutAbilitySpecHandle = GiveAbility(AbilitySpec);
+		for (const FAGHeroAbilitySet& AbilitySet : InDefaultWeaponAbilities)
+		{
+			if(!AbilitySet.IsValid())
+			{
+				continue;
+			}
 
-		OutGrantedAbilitiesSpecHandles.AddUnique(OutAbilitySpecHandle);
-	}
+			FGameplayAbilitySpec AbilitySpec(AbilitySet.AbilityToGrant);
+			AbilitySpec.SourceObject = GetAvatarActor();
+			AbilitySpec.Level = ApplyLevel;
+			AbilitySpec.DynamicAbilityTags.AddTag(AbilitySet.InputTag);
+			
+			FGameplayAbilitySpecHandle OutAbilitySpecHandle = GiveAbility(AbilitySpec);
+
+			OutGrantedAbilitiesSpecHandles.AddUnique(OutAbilitySpecHandle);
+		}
 }
 
 void UAGAbilitySystemComponent::RemoveGrantedHeroWeaponAbilities(
@@ -69,4 +70,27 @@ void UAGAbilitySystemComponent::RemoveGrantedHeroWeaponAbilities(
 	}
 
 	InSpecHandlesToRemove.Empty();
+}
+
+bool UAGAbilitySystemComponent::TryActivateAbilityByTag(FGameplayTag AbilityTagToActivate)
+{
+	check(AbilityTagToActivate.IsValid());
+
+	TArray<FGameplayAbilitySpec*> FoundAbilitySpecs;
+	GetActivatableGameplayAbilitySpecsByAllMatchingTags(AbilityTagToActivate.GetSingleTagContainer(), FoundAbilitySpecs);
+
+	if(!FoundAbilitySpecs.IsEmpty())
+	{
+		const int32 RandomAbilityIndex = FMath::RandRange(0, FoundAbilitySpecs.Num() - 1);
+		FGameplayAbilitySpec* SpecToActivate =  FoundAbilitySpecs[RandomAbilityIndex];
+
+		check(SpecToActivate)
+
+		if(!SpecToActivate->IsActive())
+		{
+			return TryActivateAbility(SpecToActivate->Handle);
+		}
+	}
+
+	return false;
 }

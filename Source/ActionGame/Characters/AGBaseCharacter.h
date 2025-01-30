@@ -13,6 +13,7 @@ class UPawnUIComponent;
 class UDataAsset_StartUpDataBase;
 class UAGAttributeSet;
 class UAGAbilitySystemComponent;
+class UMotionWarpingComponent;
 
 UCLASS()
 class ACTIONGAME_API AAGBaseCharacter : public ACharacter, public IAbilitySystemInterface, public IPawnCombatInterface, public IPawnUIInterface
@@ -46,6 +47,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AbilitySystem")
 	TObjectPtr<UAGAttributeSet> AGAttributeSet;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MotionWarping")
+	TObjectPtr<UMotionWarpingComponent> MotionWarping;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterData")
 	TSoftObjectPtr<UDataAsset_StartUpDataBase> CharacterStartUpData;
 

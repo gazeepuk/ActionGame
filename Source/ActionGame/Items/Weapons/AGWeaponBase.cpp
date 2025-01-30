@@ -4,6 +4,7 @@
 #include "Items/Weapons/AGWeaponBase.h"
 
 #include "Components/BoxComponent.h"
+#include "FunctionLibraries/AGFunctionLibrary.h"
 
 AAGWeaponBase::AAGWeaponBase()
 {
@@ -27,12 +28,13 @@ void AAGWeaponBase::OnCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedCo
 	APawn* WeaponOwningPawn = GetInstigator<APawn>();
 
 	checkf(WeaponOwningPawn, TEXT("Weapon {%s} instigator is not assigned"), *GetNameSafe(this));
-
+	
+	
 	if(APawn* HitPawn = Cast<APawn>(OtherActor))
 	{
-		if(WeaponOwningPawn != HitPawn)
+		if(UAGFunctionLibrary::IsTargetPawnHostile(WeaponOwningPawn, HitPawn))
 		{
-			OnWeaponHitTarget.ExecuteIfBound(OtherActor);
+			OnWeaponHitTarget.Execute(OtherActor);
 		}
 
 		// TODO: Implement for enemy characters
@@ -48,9 +50,9 @@ void AAGWeaponBase::OnCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComp
 
 	if(APawn* HitPawn = Cast<APawn>(OtherActor))
 	{
-		if(WeaponOwningPawn != HitPawn)
+		if(UAGFunctionLibrary::IsTargetPawnHostile(WeaponOwningPawn, HitPawn))
 		{
-			OnWeaponPulledFromTarget.ExecuteIfBound(OtherActor);
+			OnWeaponPulledFromTarget.Execute(OtherActor);
 		}
 
 		// TODO: Implement for enemy characters

@@ -3,6 +3,7 @@
 
 #include "AGFunctionLibrary.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "GenericTeamAgentInterface.h"
 #include "AbilitySystem/AGAbilitySystemComponent.h"
 #include "Interfaces/PawnCombatInterface.h"
 
@@ -64,5 +65,18 @@ UPawnCombatComponent* UAGFunctionLibrary::BP_GetPawnCombatComponentFromActor(AAc
 	OutValidType = PawnCombatComponent ? EAGValidType::Valid : EAGValidType::InValid;
 
 	return PawnCombatComponent;
+}
+
+bool UAGFunctionLibrary::IsTargetPawnHostile(const APawn* QueryPawn, const APawn* TargetPawn)
+{
+	IGenericTeamAgentInterface* QueryTeamAgent = Cast<IGenericTeamAgentInterface>(QueryPawn->GetController());
+	IGenericTeamAgentInterface* TargetTeamAgent = Cast<IGenericTeamAgentInterface>(TargetPawn->GetController());
+
+	if(QueryTeamAgent && TargetTeamAgent)
+	{
+		return QueryTeamAgent->GetGenericTeamId() != TargetTeamAgent->GetGenericTeamId();
+	}
+
+	return false;
 }
 

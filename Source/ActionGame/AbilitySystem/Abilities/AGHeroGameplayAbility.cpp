@@ -5,7 +5,7 @@
 
 #include "AbilitySystem/AGAbilitySystemComponent.h"
 #include "Characters/AGHeroCharacter.h"
-#include "Contrnollers/AGHeroPlayerController.h"
+#include "Controllers/AGHeroPlayerController.h"
 #include "CoreTypes/AGGameplayTags.h"
 
 AAGHeroCharacter* UAGHeroGameplayAbility::GetHeroCharacterFromActorInfo()
