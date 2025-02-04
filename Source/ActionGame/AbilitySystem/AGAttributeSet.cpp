@@ -49,7 +49,7 @@ void UAGAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 
 		if(UHeroUIComponent* HeroUIComponent = CachedPawnUIInterface->GetHeroUIComponent())
 		{
-			HeroUIComponent->OnCurrentHealthChanged.Broadcast(GetCurrentRage() / GetMaxRage());
+			HeroUIComponent->OnCurrentRageChanged.Broadcast(GetCurrentRage() / GetMaxRage());
 		}
 	}
 	

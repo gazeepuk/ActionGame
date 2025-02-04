@@ -4,6 +4,7 @@
 #include "AbilitySystem/AGAbilitySystemComponent.h"
 #include "AbilitySystem/Abilities/AGGameplayAbility.h"
 #include "AbilitySystem/Abilities/AGHeroGameplayAbility.h"
+#include "CoreTypes/AGGameplayTags.h"
 
 void UAGAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& InInputTag)
 {
@@ -25,6 +26,18 @@ void UAGAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& InInpu
 
 void UAGAbilitySystemComponent::OnAbilityInputReleased(const FGameplayTag& InInputTag)
 {
+	if(!InInputTag.IsValid() || !InInputTag.MatchesTag(AGGameplayTags::InputTag_MustBeHeld))
+	{
+		return;
+	}
+
+	for (const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	{
+		if(AbilitySpec.DynamicAbilityTags.HasTagExact(InInputTag))
+		{
+			CancelAbilityHandle(AbilitySpec.Handle);
+		}
+	} 
 }
 
 void UAGAbilitySystemComponent::GrantHeroWeaponAbilities(const TArray<FAGHeroAbilitySet>& InDefaultWeaponAbilities,

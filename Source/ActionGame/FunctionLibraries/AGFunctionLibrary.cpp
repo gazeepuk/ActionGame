@@ -5,7 +5,9 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GenericTeamAgentInterface.h"
 #include "AbilitySystem/AGAbilitySystemComponent.h"
+#include "CoreTypes/AGGameplayTags.h"
 #include "Interfaces/PawnCombatInterface.h"
+#include "Kismet/KismetMathLibrary.h"
 
 UAGAbilitySystemComponent* UAGFunctionLibrary::NativeGetAGAbilitySystemComponentFromActor(AActor* InActor)
 {
@@ -78,5 +80,56 @@ bool UAGFunctionLibrary::IsTargetPawnHostile(const APawn* QueryPawn, const APawn
 	}
 
 	return false;
+}
+
+float UAGFunctionLibrary::GetScalableFloatValueAtLevel(const FScalableFloat& InScalableFloat, float InLevel)
+{
+	return InScalableFloat.GetValueAtLevel(InLevel);
+}
+
+FGameplayTag UAGFunctionLibrary::ComputeHitReactDirectionTag(AActor* InAttacker, AActor* InVictim,
+	float& OutAngleDifference)
+{
+	check(InAttacker && InVictim);
+
+	const FVector VictimForward	= InVictim->GetActorForwardVector();
+	const FVector VictimToAttackerNormalized = (InAttacker->GetActorLocation() - InVictim->GetActorLocation()).GetSafeNormal();
+
+	const float DotResult = FVector::DotProduct(VictimForward, VictimToAttackerNormalized);
+	OutAngleDifference = UKismetMathLibrary::DegAcos(DotResult);
+
+	const FVector CrossResult = FVector::CrossProduct(VictimForward,VictimToAttackerNormalized);
+	if(CrossResult.Z < 0.f)
+	{
+		OutAngleDifference *= -1.f;
+	}
+
+	if(OutAngleDifference >= -45.f && OutAngleDifference <= 45.f)
+	{
+		return AGGameplayTags::Shared_Status_HitReact_Front;
+	}
+	else if(OutAngleDifference < -45.f && OutAngleDifference >= -135.f)
+	{
+		return AGGameplayTags::Shared_Status_HitReact_Left;
+	}
+	else if(OutAngleDifference > -45.f && OutAngleDifference <= 135.f)
+	{
+		return AGGameplayTags::Shared_Status_HitReact_Right;
+	}
+	else if(OutAngleDifference < -135.f || OutAngleDifference > 135.f)
+	{
+		return AGGameplayTags::Shared_Status_HitReact_Back;
+	}
+	
+	return AGGameplayTags::Shared_Status_HitReact_Front;
+}
+
+bool UAGFunctionLibrary::IsValidBlock(AActor* InAttacker, AActor* InDefender)
+{
+	check(InAttacker && InDefender);
+
+	const float DotResult = FVector::DotProduct(InAttacker->GetActorForwardVector(), InDefender->GetActorForwardVector());
+
+	return DotResult < -0.25f;
 }
 

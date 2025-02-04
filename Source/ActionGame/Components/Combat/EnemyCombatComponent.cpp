@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "CoreTypes/AGGameplayTags.h"
+#include "FunctionLibraries/AGFunctionLibrary.h"
 
 
 void UEnemyCombatComponent::OnHitTargetActor(AActor* HitActor)
@@ -19,12 +20,12 @@ void UEnemyCombatComponent::OnHitTargetActor(AActor* HitActor)
 	// TODO:: Implement block check
 	bool bIsValidBlock = false;
 
-	const bool bIsPlayerBlocking = false;
+	const bool bIsPlayerBlocking = UAGFunctionLibrary::NativeDoesActorHaveTag(HitActor, AGGameplayTags::Player_Status_Blocking);
 	const bool bIsAttackUnblockable = false;
 
 	if(bIsPlayerBlocking && !bIsAttackUnblockable)
 	{
-		// TODO:: check if block is valid
+		bIsValidBlock = UAGFunctionLibrary::IsValidBlock(GetOwner(), HitActor);
 	}
 
 	FGameplayEventData EventData;
@@ -33,7 +34,7 @@ void UEnemyCombatComponent::OnHitTargetActor(AActor* HitActor)
 	
 	if(bIsValidBlock)
 	{
-		// TODO:: Handle successful block
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(HitActor, AGGameplayTags::Player_Event_SuccessfulBlock, EventData);
 	}
 	else
 	{

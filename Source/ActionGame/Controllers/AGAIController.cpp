@@ -79,5 +79,4 @@ void AAGAIController::OnEnemyPerceptionUpdated(AActor* Actor, FAIStimulus Stimul
 			BlackboardComponent->SetValueAsObject(FName("TargetActor"), Actor);
 		}
 	}
-	
 }
