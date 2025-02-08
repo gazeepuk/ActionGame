@@ -3,6 +3,7 @@
 
 #include "AGHeroCharacter.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -90,6 +91,9 @@ void AAGHeroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	AGInputComponent->BindNativeInputAction(InputConfigDataAsset, AGGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move);
 	AGInputComponent->BindNativeInputAction(InputConfigDataAsset, AGGameplayTags::InputTag_Look, ETriggerEvent::Triggered, this, &ThisClass::Input_Look);
 
+	AGInputComponent->BindNativeInputAction(InputConfigDataAsset, AGGameplayTags::InputTag_SwitchTarget, ETriggerEvent::Triggered, this, &ThisClass::Input_SwitchTargetTriggered);
+	AGInputComponent->BindNativeInputAction(InputConfigDataAsset, AGGameplayTags::InputTag_SwitchTarget, ETriggerEvent::Completed, this, &ThisClass::Input_SwitchTargetCompleted);
+
 	AGInputComponent->BindAbilityInputAction(InputConfigDataAsset, this, &ThisClass::Input_AbilityInputPressed, &ThisClass::Input_AbilityInputReleased);
 }
 
@@ -132,6 +136,19 @@ void AAGHeroCharacter::Input_Look(const FInputActionValue& InputActionValue)
 	{
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AAGHeroCharacter::Input_SwitchTargetTriggered(const FInputActionValue& InputActionValue)
+{
+	SwitchDirection = InputActionValue.Get<FVector2D>();
+}
+
+void AAGHeroCharacter::Input_SwitchTargetCompleted(const FInputActionValue& InputActionValue)
+{
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+		this,
+		SwitchDirection.X > 0.f ? AGGameplayTags::Player_Event_SwitchTarget_Right : AGGameplayTags::Player_Event_SwitchTarget_Left,
+		FGameplayEventData());
 }
 
 void AAGHeroCharacter::Input_AbilityInputPressed(FGameplayTag InInputTag)

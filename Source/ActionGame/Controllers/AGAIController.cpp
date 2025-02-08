@@ -33,7 +33,7 @@ ETeamAttitude::Type AAGAIController::GetTeamAttitudeTowards(const AActor& Other)
 	const APawn* PawnToCheck = Cast<const APawn>(&Other);
 
 	const IGenericTeamAgentInterface* OtherTeamAgent = Cast<const IGenericTeamAgentInterface>(PawnToCheck->GetController());
-	if(OtherTeamAgent && OtherTeamAgent->GetGenericTeamId() <= GetGenericTeamId())
+	if(OtherTeamAgent && OtherTeamAgent->GetGenericTeamId() < GetGenericTeamId())
 	{
 		return ETeamAttitude::Hostile;
 	}
