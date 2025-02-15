@@ -87,8 +87,8 @@ float UAGFunctionLibrary::GetScalableFloatValueAtLevel(const FScalableFloat& InS
 	return InScalableFloat.GetValueAtLevel(InLevel);
 }
 
-FGameplayTag UAGFunctionLibrary::ComputeHitReactDirectionTag(AActor* InAttacker, AActor* InVictim,
-	float& OutAngleDifference)
+FGameplayTag UAGFunctionLibrary::ComputeHitReactDirectionTag(const AActor* InAttacker, const AActor* InVictim,
+                                                             float& OutAngleDifference)
 {
 	check(InAttacker && InVictim);
 
@@ -124,12 +124,22 @@ FGameplayTag UAGFunctionLibrary::ComputeHitReactDirectionTag(AActor* InAttacker,
 	return AGGameplayTags::Shared_Status_HitReact_Front;
 }
 
-bool UAGFunctionLibrary::IsValidBlock(AActor* InAttacker, AActor* InDefender)
+bool UAGFunctionLibrary::IsValidBlock(const AActor* InAttacker, const AActor* InDefender)
 {
 	check(InAttacker && InDefender);
 
 	const float DotResult = FVector::DotProduct(InAttacker->GetActorForwardVector(), InDefender->GetActorForwardVector());
 
 	return DotResult < -0.25f;
+}
+
+bool UAGFunctionLibrary::ApplyGameplayEffectSpecHandleToTargetActor(AActor* InInstigator, AActor* InTargetActor,
+	const FGameplayEffectSpecHandle& InSpecHandle)
+{
+	UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InInstigator);
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InTargetActor);
+
+	FActiveGameplayEffectHandle ActiveGameplayEffectHandle = SourceASC->ApplyGameplayEffectSpecToTarget(*InSpecHandle.Data, TargetASC);
+	return ActiveGameplayEffectHandle.WasSuccessfullyApplied();
 }
 

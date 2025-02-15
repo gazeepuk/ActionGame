@@ -42,8 +42,12 @@ public:
 	virtual void OnWeaponPulledFromTargetActor(AActor* InteractingActor);
 
 protected:
+	UPROPERTY()
 	TArray<AActor*> OverlappedActors;
 	
 private:
 	TMap<FGameplayTag, AAGWeaponBase*> CharacterCarriedWeaponMap;
+
+	void ToggleCurrentEquippedWeaponCollision(bool bShouldEnable);
+	virtual void ToggleHandsCollisions(bool bShouldEnable, EToggleDamageType ToggleDamageType);
 };

@@ -9,6 +9,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AGFunctionLibrary.generated.h"
 
+struct FGameplayEffectSpecHandle;
 class UAGAbilitySystemComponent;
 /**
  * 
@@ -44,8 +45,11 @@ public:
 	static float GetScalableFloatValueAtLevel(const FScalableFloat& InScalableFloat, float InLevel = 1.f);
 
 	UFUNCTION(BlueprintPure, Category = "ActionGame|FunctionLibrary")
-	static FGameplayTag ComputeHitReactDirectionTag(AActor* InAttacker, AActor* InVictim, float& OutAngleDifference);
+	static FGameplayTag ComputeHitReactDirectionTag(const AActor* InAttacker, const AActor* InVictim, float& OutAngleDifference);
 
 	UFUNCTION(BlueprintPure, Category = "ActionGame|FunctionLibrary")
-	static bool IsValidBlock(AActor* InAttacker, AActor* InDefender);
+	static bool IsValidBlock(const AActor* InAttacker, const AActor* InDefender);
+	
+	UFUNCTION(BlueprintPure, Category = "ActionGame|FunctionLibrary")
+	static  bool ApplyGameplayEffectSpecHandleToTargetActor(AActor* InInstigator, AActor* InTargetActor, const FGameplayEffectSpecHandle& InSpecHandle);
 };

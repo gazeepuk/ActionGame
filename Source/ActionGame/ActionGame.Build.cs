@@ -18,7 +18,9 @@ public class ActionGame : ModuleRules
 			"EnhancedInput",
 			"GameplayTasks",
 			"AnimGraphRuntime",
-			"MotionWarping"
+			"MotionWarping",
+			"Niagara",
+			"NavigationSystem"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule" });
