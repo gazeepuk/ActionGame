@@ -20,21 +20,15 @@ void UAGAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& InInpu
 			continue;
 		}
 
-		if(InInputTag.MatchesTag(AGGameplayTags::InputTag_Toggleable))
+		if(InInputTag.MatchesTag(AGGameplayTags::InputTag_Toggleable) && AbilitySpec.IsActive())
 		{
-			if(AbilitySpec.IsActive())
-			{
-				CancelAbilityHandle(AbilitySpec.Handle);
-			}
-			else
-			{
-				TryActivateAbility(AbilitySpec.Handle);
-			}
-
-			continue;
+			CancelAbilityHandle(AbilitySpec.Handle);
+		}
+		else
+		{
+			TryActivateAbility(AbilitySpec.Handle);
 		}
 		
-		TryActivateAbility(AbilitySpec.Handle);
 	} 
 }
 

@@ -43,7 +43,6 @@ void AAGProjectileBase::BeginPlay()
 	if(ProjectileDamagePolicy == EProjectileDamagePolicy::OnBeginOverlap)
 	{
 		ProjectileCollisionBox->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-
 	}
 }
 
@@ -59,26 +58,7 @@ void AAGProjectileBase::OnProjectileHit(UPrimitiveComponent* HitComponent, AActo
 		return;
 	}
 
-	bool bIsValidBlock = false;
-
-	const bool bIsPlayerBlocking = UAGFunctionLibrary::NativeDoesActorHaveTag(OtherActor, AGGameplayTags::Player_Status_Blocking);
-	if(bIsPlayerBlocking)
-	{
-		bIsValidBlock = UAGFunctionLibrary::IsValidBlock(this, OtherActor);
-	}
-
-	FGameplayEventData EventData;
-	EventData.Instigator = this;
-	EventData.Target = HitPawn;
-	
-	if(bIsValidBlock)
-	{
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(HitPawn, AGGameplayTags::Player_Event_SuccessfulBlock, EventData);
-	}
-	else
-	{
-		HandleApplyProjectileDamage(HitPawn, EventData);
-	}
+	ApplyDamageToPawn(HitPawn);
 
 	Destroy();
 }
@@ -86,11 +66,52 @@ void AAGProjectileBase::OnProjectileHit(UPrimitiveComponent* HitComponent, AActo
 void AAGProjectileBase::OnProjectileBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if(OverlappedActors.Contains(OtherActor))
+	{
+		return;
+	}
+
+	OverlappedActors.AddUnique(OtherActor);
+
+	APawn* HitPawn = Cast<APawn>(OtherActor);
+	if(!HitPawn || !UAGFunctionLibrary::IsTargetPawnHostile(GetInstigator(), HitPawn))
+	{
+		return;
+	}
+
+	ApplyDamageToPawn(HitPawn);
+}
+
+void AAGProjectileBase::ApplyDamageToPawn(APawn* InTargetPawn)
+{
+	bool bIsValidBlock = false;
+
+	const bool bIsPlayerBlocking = UAGFunctionLibrary::NativeDoesActorHaveTag(InTargetPawn, AGGameplayTags::Player_Status_Blocking);
+	if(bIsPlayerBlocking)
+	{
+		bIsValidBlock = UAGFunctionLibrary::IsValidBlock(this, InTargetPawn);
+	}
+
+	FGameplayEventData EventData;
+	EventData.Instigator = this;
+	EventData.Target = InTargetPawn;
+	
+	if(bIsValidBlock)
+	{
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(InTargetPawn, AGGameplayTags::Player_Event_SuccessfulBlock, EventData);
+	}
+	else
+	{
+		HandleApplyProjectileDamage(InTargetPawn, EventData);
+	}
 }
 
 void AAGProjectileBase::HandleApplyProjectileDamage(APawn* InTarget, const FGameplayEventData& InPayload) const
 {
 	checkf(ProjectileDamageEffectSpecHandle.IsValid(), TEXT("Projectile {%s} Effect Spec Handle is nullptr"), *GetNameSafe(this));
 	const bool bWasApplied = UAGFunctionLibrary::ApplyGameplayEffectSpecHandleToTargetActor(GetInstigator(), InTarget, ProjectileDamageEffectSpecHandle);
-	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(InTarget, AGGameplayTags::Shared_Event_HitReact, InPayload);
+	if(bWasApplied)
+	{
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(InTarget, AGGameplayTags::Shared_Event_HitReact, InPayload);
+	}
 }
