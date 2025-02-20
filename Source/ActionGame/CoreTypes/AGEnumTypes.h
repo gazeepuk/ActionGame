@@ -20,3 +20,18 @@ enum class EAGSuccessType : uint8
 	Successful,
 	Failed
 };
+
+UENUM()
+enum class EAGCountDownActionInput : uint8
+{
+	Start,
+	Cancel
+};
+
+UENUM()
+enum class EAGCountDownActionOutput : uint8
+{
+	Updated,
+	Completed,
+	Canceled
+};

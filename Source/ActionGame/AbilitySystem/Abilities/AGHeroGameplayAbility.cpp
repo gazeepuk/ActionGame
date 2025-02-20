@@ -52,3 +52,14 @@ FGameplayEffectSpecHandle UAGHeroGameplayAbility::MakeHeroDamageEffectSpecHandle
 		
 	return  EffectSpecHandle;
 }
+
+UHeroUIComponent* UAGHeroGameplayAbility::GetHeroUIComponentFromActorInfo()
+{
+	AAGHeroCharacter* OwningHeroCharacter = GetHeroCharacterFromActorInfo();
+	check(OwningHeroCharacter);
+
+	UHeroUIComponent* HeroUIComponent = OwningHeroCharacter->GetHeroUIComponent();
+	check(HeroUIComponent);
+	
+	return HeroUIComponent;
+}

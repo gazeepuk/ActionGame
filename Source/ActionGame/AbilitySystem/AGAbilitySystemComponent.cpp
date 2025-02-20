@@ -49,29 +49,46 @@ void UAGAbilitySystemComponent::OnAbilityInputReleased(const FGameplayTag& InInp
 }
 
 void UAGAbilitySystemComponent::GrantHeroWeaponAbilities(const TArray<FAGHeroAbilitySet>& InDefaultWeaponAbilities,
-	int32 ApplyLevel, TArray<FGameplayAbilitySpecHandle>& OutGrantedAbilitiesSpecHandles)
+                                                         const TArray<FAGHeroSpecialAbilitySet>& InSpecialWeaponAbilities, int32 ApplyLevel, TArray<FGameplayAbilitySpecHandle>& OutGrantedAbilitiesSpecHandles)
 {
-		if(InDefaultWeaponAbilities.IsEmpty())
+	if(InDefaultWeaponAbilities.IsEmpty())
+	{
+		return;
+	}
+
+	for (const FAGHeroAbilitySet& AbilitySet : InDefaultWeaponAbilities)
+	{
+		if(!AbilitySet.IsValid())
 		{
-			return;
+			continue;
 		}
 
-		for (const FAGHeroAbilitySet& AbilitySet : InDefaultWeaponAbilities)
+		FGameplayAbilitySpec AbilitySpec(AbilitySet.AbilityToGrant);
+		AbilitySpec.SourceObject = GetAvatarActor();
+		AbilitySpec.Level = ApplyLevel;
+		AbilitySpec.DynamicAbilityTags.AddTag(AbilitySet.InputTag);
+		
+		FGameplayAbilitySpecHandle OutAbilitySpecHandle = GiveAbility(AbilitySpec);
+
+		OutGrantedAbilitiesSpecHandles.AddUnique(OutAbilitySpecHandle);
+	}
+
+	for (const FAGHeroSpecialAbilitySet& AbilitySet : InSpecialWeaponAbilities)
+	{
+		if(!AbilitySet.IsValid())
 		{
-			if(!AbilitySet.IsValid())
-			{
-				continue;
-			}
-
-			FGameplayAbilitySpec AbilitySpec(AbilitySet.AbilityToGrant);
-			AbilitySpec.SourceObject = GetAvatarActor();
-			AbilitySpec.Level = ApplyLevel;
-			AbilitySpec.DynamicAbilityTags.AddTag(AbilitySet.InputTag);
-			
-			FGameplayAbilitySpecHandle OutAbilitySpecHandle = GiveAbility(AbilitySpec);
-
-			OutGrantedAbilitiesSpecHandles.AddUnique(OutAbilitySpecHandle);
+			continue;
 		}
+
+		FGameplayAbilitySpec AbilitySpec(AbilitySet.AbilityToGrant);
+		AbilitySpec.SourceObject = GetAvatarActor();
+		AbilitySpec.Level = ApplyLevel;
+		AbilitySpec.DynamicAbilityTags.AddTag(AbilitySet.InputTag);
+		
+		FGameplayAbilitySpecHandle OutAbilitySpecHandle = GiveAbility(AbilitySpec);
+
+		OutGrantedAbilitiesSpecHandles.AddUnique(OutAbilitySpecHandle);
+	}
 }
 
 void UAGAbilitySystemComponent::RemoveGrantedHeroWeaponAbilities(
@@ -99,7 +116,6 @@ bool UAGAbilitySystemComponent::TryActivateAbilityByTag(FGameplayTag AbilityTagT
 
 	TArray<FGameplayAbilitySpec*> FoundAbilitySpecs;
 	GetActivatableGameplayAbilitySpecsByAllMatchingTags(AbilityTagToActivate.GetSingleTagContainer(), FoundAbilitySpecs);
-
 	if(!FoundAbilitySpecs.IsEmpty())
 	{
 		const int32 RandomAbilityIndex = FMath::RandRange(0, FoundAbilitySpecs.Num() - 1);

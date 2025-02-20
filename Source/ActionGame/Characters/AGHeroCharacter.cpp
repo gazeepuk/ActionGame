@@ -94,14 +94,11 @@ void AAGHeroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	AGInputComponent->BindNativeInputAction(InputConfigDataAsset, AGGameplayTags::InputTag_SwitchTarget, ETriggerEvent::Triggered, this, &ThisClass::Input_SwitchTargetTriggered);
 	AGInputComponent->BindNativeInputAction(InputConfigDataAsset, AGGameplayTags::InputTag_SwitchTarget, ETriggerEvent::Completed, this, &ThisClass::Input_SwitchTargetCompleted);
 
+	AGInputComponent->BindNativeInputAction(InputConfigDataAsset, AGGameplayTags::InputTag_PickUp_Stones, ETriggerEvent::Started, this, &ThisClass::Input_PickUpStoneStarted);
+
 	AGInputComponent->BindAbilityInputAction(InputConfigDataAsset, this, &ThisClass::Input_AbilityInputPressed, &ThisClass::Input_AbilityInputReleased);
 }
 
-void AAGHeroCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-
-}
 
 void AAGHeroCharacter::Input_Move(const FInputActionValue& InputActionValue)
 {
@@ -159,4 +156,12 @@ void AAGHeroCharacter::Input_AbilityInputPressed(FGameplayTag InInputTag)
 void AAGHeroCharacter::Input_AbilityInputReleased(FGameplayTag InInputTag)
 {
 	AGAbilitySystemComponent->OnAbilityInputReleased(InInputTag);
+}
+
+void AAGHeroCharacter::Input_PickUpStoneStarted(const FInputActionValue& InputActionValue)
+{
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+		this,
+		AGGameplayTags::Player_Event_ConsumeStone,
+		FGameplayEventData());
 }

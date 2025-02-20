@@ -46,4 +46,9 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "ActionGame|Ability", meta = (DisplayName = "Apply Gameplay Effect Spec Handle To Target Actor", ExpandEnumAsExecs = "OutSuccessType"))
 	FActiveGameplayEffectHandle BP_ApplyEffectSpecHandleToTarget(AActor* TargetActor, const FGameplayEffectSpecHandle& InSpecHandle, EAGSuccessType& OutSuccessType);
 
+	UFUNCTION(BlueprintCallable, Category = "ActionGame|Ability")
+	bool GetRemainingCooldownByTag(FGameplayTag InCooldownTag, float& TotalCooldownTime, float& RemainingCooldownTime);
+
+	UFUNCTION(BlueprintCallable, Category = "ActionGame|Ability")
+	void ApplyGameplayEffectSpecHandleToHitResults(const FGameplayEffectSpecHandle& InSpecHandle, const TArray<FHitResult>& HitResults, const bool bTargetHostile = true);
 };

@@ -7,6 +7,8 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AGAbilitySystemComponent.h"
 #include "Components/Combat/PawnCombatComponent.h"
+#include "CoreTypes/AGGameplayTags.h"
+#include "FunctionLibraries/AGFunctionLibrary.h"
 
 void UAGGameplayAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
 {
@@ -63,4 +65,56 @@ FActiveGameplayEffectHandle UAGGameplayAbility::BP_ApplyEffectSpecHandleToTarget
 	OutSuccessType = ActiveGameplayEffectHandle.WasSuccessfullyApplied() ? EAGSuccessType::Successful : EAGSuccessType::Failed;
 
 	return ActiveGameplayEffectHandle;
+}
+
+bool UAGGameplayAbility::GetRemainingCooldownByTag(FGameplayTag InCooldownTag, float& TotalCooldownTime,
+	float& RemainingCooldownTime)
+{
+	check(InCooldownTag.IsValid());
+
+	FGameplayEffectQuery CooldownQuery = FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(InCooldownTag.GetSingleTagContainer());
+	TArray<TPair<float,float>> TimeRemainingAndDuration = GetAbilitySystemComponentFromActorInfo()->GetActiveEffectsTimeRemainingAndDuration(CooldownQuery);
+
+	if(!TimeRemainingAndDuration.IsEmpty())
+	{
+		RemainingCooldownTime = TimeRemainingAndDuration[0].Key;
+		TotalCooldownTime = TimeRemainingAndDuration[0].Value;
+	}
+	else
+	{
+		RemainingCooldownTime = 0.f;
+		TotalCooldownTime = 0.f;
+	}
+
+	return  RemainingCooldownTime > 0.f;
+}
+
+void UAGGameplayAbility::ApplyGameplayEffectSpecHandleToHitResults(const FGameplayEffectSpecHandle& InSpecHandle,
+                                                                   const TArray<FHitResult>& HitResults, const bool bTargetHostile)
+{
+	if(HitResults.IsEmpty())
+	{
+		return;
+	}
+
+	APawn* OwningPawn = CastChecked<APawn>(GetAvatarActorFromActorInfo());
+	
+	for (const FHitResult& HitResult : HitResults)
+	{
+		if(APawn* HitPawn = Cast<APawn>(HitResult.GetActor()))
+		{
+			if(UAGFunctionLibrary::IsTargetPawnHostile(OwningPawn, HitPawn) && bTargetHostile)
+			{
+				FActiveGameplayEffectHandle ActiveGameplayEffectHandle = UAGFunctionLibrary::ApplyGameplayEffectSpecHandleToTargetActor(OwningPawn, HitPawn, InSpecHandle);
+				if(ActiveGameplayEffectHandle.WasSuccessfullyApplied())
+				{
+					FGameplayEventData Data;
+					Data.Target = HitPawn;
+					Data.Instigator = OwningPawn;
+					
+					UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(HitPawn, AGGameplayTags::Shared_Event_HitReact, Data);
+				}
+			}
+		}
+	}
 }

@@ -5,6 +5,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GenericTeamAgentInterface.h"
 #include "AbilitySystem/AGAbilitySystemComponent.h"
+#include "CoreTypes/AGCountDownAction.h"
 #include "CoreTypes/AGGameplayTags.h"
 #include "Interfaces/PawnCombatInterface.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -141,5 +142,46 @@ bool UAGFunctionLibrary::ApplyGameplayEffectSpecHandleToTargetActor(AActor* InIn
 
 	FActiveGameplayEffectHandle ActiveGameplayEffectHandle = SourceASC->ApplyGameplayEffectSpecToTarget(*InSpecHandle.Data, TargetASC);
 	return ActiveGameplayEffectHandle.WasSuccessfullyApplied();
+}
+
+void UAGFunctionLibrary::CountDown(const UObject* WorldContextObject, float TotalTime, float UpdateInterval,
+                                   float& OutRemainingTime, EAGCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") EAGCountDownActionOutput& CountDownOutput,
+                                   FLatentActionInfo LatentInfo)
+{
+	UWorld* World = nullptr;
+
+	if (GEngine)
+	{
+		World = GEngine->GetWorldFromContextObject(WorldContextObject,EGetWorldErrorMode::LogAndReturnNull);
+	}
+
+	if (!World)
+	{
+		return;
+	}
+
+	FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
+
+	FAGCountDownAction* FoundAction = LatentActionManager.FindExistingAction<FAGCountDownAction>(LatentInfo.CallbackTarget,LatentInfo.UUID);
+
+	if (CountDownInput == EAGCountDownActionInput::Start)
+	{
+		if (!FoundAction)
+		{
+			LatentActionManager.AddNewAction(
+				LatentInfo.CallbackTarget,
+				LatentInfo.UUID,
+				new FAGCountDownAction(TotalTime,UpdateInterval,OutRemainingTime,CountDownOutput,LatentInfo)
+			);
+		}
+	}
+
+	if (CountDownInput == EAGCountDownActionInput::Cancel)
+	{
+		if (FoundAction)
+		{
+			FoundAction->CancelAction();
+		}
+	}
 }
 

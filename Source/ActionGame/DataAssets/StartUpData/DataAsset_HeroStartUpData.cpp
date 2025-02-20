@@ -4,7 +4,7 @@
 #include "DataAsset_HeroStartUpData.h"
 
 #include "AbilitySystem/AGAbilitySystemComponent.h"
-#include "AbilitySystem/Abilities/AGGameplayAbility.h"
+#include "AbilitySystem/Abilities/AGHeroGameplayAbility.h"
 
 void UDataAsset_HeroStartUpData::GiveToAbilitySystemComponent(UAGAbilitySystemComponent* InASCToGive, int32 ApplyLevel)
 {

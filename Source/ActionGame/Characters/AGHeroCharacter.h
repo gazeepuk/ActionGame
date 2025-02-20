@@ -37,7 +37,6 @@ protected:
 	//~ End Begin APawn Interface
 	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	virtual void BeginPlay() override;
 
 private:
 
@@ -64,6 +63,8 @@ private:
 	
 	void Input_AbilityInputPressed(FGameplayTag InInputTag);
 	void Input_AbilityInputReleased(FGameplayTag InInputTag);
+
+	void Input_PickUpStoneStarted(const FInputActionValue& InputActionValue);
 public:
 	FORCEINLINE UHeroCombatComponent* GetHeroCombatComponent() const { return HeroCombatComponent; }
 };
