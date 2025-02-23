@@ -13,9 +13,11 @@
 #include "Components/Combat/HeroCombatComponent.h"
 #include "Components/Input/AGEnhancedInputComponent.h"
 #include "Components/UI/HeroUIComponent.h"
+#include "CoreTypes/AGEnumTypes.h"
 #include "CoreTypes/AGGameplayTags.h"
 #include "DataAssets/Input/DataAsset_InputConfig.h"
 #include "DataAssets/StartUpData/DataAsset_StartUpDataBase.h"
+#include "GameModes/AGBaseGameMode.h"
 
 AAGHeroCharacter::AAGHeroCharacter()
 {
@@ -68,7 +70,30 @@ void AAGHeroCharacter::PossessedBy(AController* NewController)
 	{
 		if(UDataAsset_StartUpDataBase* LoadedData = CharacterStartUpData.LoadSynchronous())
 		{
-			LoadedData->GiveToAbilitySystemComponent(AGAbilitySystemComponent);
+			int32 AbilityApplyLevel = 1;
+			
+			if(AAGBaseGameMode* BaseGameMode = GetWorld()->GetAuthGameMode<AAGBaseGameMode>())
+			{
+				switch (BaseGameMode->GetCurrentGameDifficulty())
+				{
+				case EAGGameDifficulty::Easy:
+					AbilityApplyLevel = 4;
+					break;
+				case EAGGameDifficulty::Normal:
+					AbilityApplyLevel = 3;
+					break;
+				case EAGGameDifficulty::Hard:
+					AbilityApplyLevel = 2;
+					break;
+				case EAGGameDifficulty::VeryHard:
+					AbilityApplyLevel = 1;
+					break;
+				default:
+					break;
+				}
+			}
+			
+			LoadedData->GiveToAbilitySystemComponent(AGAbilitySystemComponent, AbilityApplyLevel);
 		}
 	}
 }

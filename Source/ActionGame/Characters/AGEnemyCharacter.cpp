@@ -11,6 +11,7 @@
 #include "Engine/AssetManager.h"
 #include "FunctionLibraries/AGFunctionLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameModes/AGBaseGameMode.h"
 #include "UI/Widgets/AGWidgetBase.h"
 #include "Utils/AGDebugHelper.h"
 
@@ -114,14 +115,37 @@ void AAGEnemyCharacter::InitEnemyStartUpData()
 		return;
 	}
 
+	int32 AbilityApplyLevel = 1;
+			
+	if(AAGBaseGameMode* BaseGameMode = GetWorld()->GetAuthGameMode<AAGBaseGameMode>())
+	{
+		switch (BaseGameMode->GetCurrentGameDifficulty())
+		{
+		case EAGGameDifficulty::Easy:
+			AbilityApplyLevel = 1;
+			break;
+		case EAGGameDifficulty::Normal:
+			AbilityApplyLevel = 2;
+			break;
+		case EAGGameDifficulty::Hard:
+			AbilityApplyLevel = 3;
+			break;
+		case EAGGameDifficulty::VeryHard:
+			AbilityApplyLevel = 4;
+			break;
+		default:
+			break;
+		}
+	}
+	
 	UAssetManager::GetStreamableManager().RequestAsyncLoad(
 		CharacterStartUpData.ToSoftObjectPath(),
 		FStreamableDelegate::CreateLambda(
-			[this]()
+			[this, AbilityApplyLevel]()
 			{
 				if(UDataAsset_StartUpDataBase* LoadedData = CharacterStartUpData.Get())
 				{
-					LoadedData->GiveToAbilitySystemComponent(AGAbilitySystemComponent);
+					LoadedData->GiveToAbilitySystemComponent(AGAbilitySystemComponent, AbilityApplyLevel);
 				}
 			}
 		)

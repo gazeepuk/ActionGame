@@ -35,3 +35,12 @@ enum class EAGCountDownActionOutput : uint8
 	Completed,
 	Canceled
 };
+
+UENUM(BlueprintType)
+enum class EAGGameDifficulty : uint8
+{
+	Easy,
+	Normal,
+	Hard,
+	VeryHard
+};
