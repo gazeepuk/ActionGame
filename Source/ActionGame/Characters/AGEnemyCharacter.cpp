@@ -137,7 +137,6 @@ void AAGEnemyCharacter::InitEnemyStartUpData()
 			break;
 		}
 	}
-	
 	UAssetManager::GetStreamableManager().RequestAsyncLoad(
 		CharacterStartUpData.ToSoftObjectPath(),
 		FStreamableDelegate::CreateLambda(

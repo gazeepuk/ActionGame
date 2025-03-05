@@ -91,7 +91,7 @@ void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
 	AvailableActorsToLock.Empty();
 	
 	TArray<FHitResult> BoxTraceHits;
-	//TODO:: Change Trace type
+
 	UKismetSystemLibrary::BoxTraceMultiForObjects(
 		GetAvatarActorFromActorInfo(),
 		GetAvatarActorFromActorInfo()->GetActorLocation(), 

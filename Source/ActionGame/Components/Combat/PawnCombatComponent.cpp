@@ -82,8 +82,6 @@ void UPawnCombatComponent::ToggleWeaponCollision(bool bShouldEnable, EToggleDama
 	default:
 		break;
 	}
-
-	//TODO: Handle collision boxes
 }
 
 void UPawnCombatComponent::OnHitTargetActor(AActor* HitActor)

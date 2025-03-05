@@ -36,8 +36,6 @@ void AAGWeaponBase::OnCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedCo
 		{
 			OnWeaponHitTarget.Execute(OtherActor);
 		}
-
-		// TODO: Implement for enemy characters
 	}
 }
 
@@ -54,8 +52,6 @@ void AAGWeaponBase::OnCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComp
 		{
 			OnWeaponPulledFromTarget.Execute(OtherActor);
 		}
-
-		// TODO: Implement for enemy characters
 	}
 }
 
