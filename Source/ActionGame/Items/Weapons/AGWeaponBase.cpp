@@ -34,7 +34,7 @@ void AAGWeaponBase::OnCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedCo
 	{
 		if(UAGFunctionLibrary::IsTargetPawnHostile(WeaponOwningPawn, HitPawn))
 		{
-			OnWeaponHitTarget.Execute(OtherActor);
+			OnWeaponHitTarget.Broadcast(OtherActor);
 		}
 	}
 }
@@ -50,7 +50,7 @@ void AAGWeaponBase::OnCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComp
 	{
 		if(UAGFunctionLibrary::IsTargetPawnHostile(WeaponOwningPawn, HitPawn))
 		{
-			OnWeaponPulledFromTarget.Execute(OtherActor);
+			OnWeaponPulledFromTarget.Broadcast(OtherActor);
 		}
 	}
 }

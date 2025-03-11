@@ -8,7 +8,7 @@
 
 class UBoxComponent;
 
-DECLARE_DELEGATE_OneParam(FOnTargetInteractedDelegate, AActor*)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTargetInteractedDelegate, AActor*, TargetActor);
 
 UCLASS()
 class ACTIONGAME_API AAGWeaponBase : public AActor

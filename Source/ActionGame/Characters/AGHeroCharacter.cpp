@@ -77,16 +77,16 @@ void AAGHeroCharacter::PossessedBy(AController* NewController)
 				switch (BaseGameMode->GetCurrentGameDifficulty())
 				{
 				case EAGGameDifficulty::Easy:
-					AbilityApplyLevel = 4;
+					AbilityApplyLevel = 1;
 					break;
 				case EAGGameDifficulty::Normal:
-					AbilityApplyLevel = 3;
-					break;
-				case EAGGameDifficulty::Hard:
 					AbilityApplyLevel = 2;
 					break;
+				case EAGGameDifficulty::Hard:
+					AbilityApplyLevel = 3;
+					break;
 				case EAGGameDifficulty::VeryHard:
-					AbilityApplyLevel = 1;
+					AbilityApplyLevel = 4;
 					break;
 				default:
 					break;

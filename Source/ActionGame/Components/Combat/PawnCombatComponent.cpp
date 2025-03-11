@@ -3,6 +3,7 @@
 
 #include "PawnCombatComponent.h"
 
+#include "Characters/AGBaseCharacter.h"
 #include "Components/BoxComponent.h"
 #include "Items/Weapons/AGWeaponBase.h"
 
@@ -13,8 +14,8 @@ void UPawnCombatComponent::RegisterSpawnedWeapon(FGameplayTag InWeaponTagToRegis
 
 	CharacterCarriedWeaponMap.Emplace(InWeaponTagToRegister, InWeaponToRegister);
 
-	InWeaponToRegister->OnWeaponHitTarget.BindUObject(this, &ThisClass::OnHitTargetActor);
-	InWeaponToRegister->OnWeaponPulledFromTarget.BindUObject(this, &ThisClass::OnWeaponPulledFromTargetActor);
+	InWeaponToRegister->OnWeaponHitTarget.AddDynamic(this, &ThisClass::OnHitTargetActor);
+	InWeaponToRegister->OnWeaponPulledFromTarget.AddDynamic(this, &ThisClass::OnWeaponPulledFromTargetActor);
 	
 	if(bRegisterAsEquippedWeapon)
 	{
@@ -63,7 +64,48 @@ void UPawnCombatComponent::ToggleCurrentEquippedWeaponCollision(bool bShouldEnab
 
 void UPawnCombatComponent::ToggleHandsCollisions(bool bShouldEnable, EToggleDamageType ToggleDamageType)
 {
+	AAGBaseCharacter* OwningCharacter =  GetOwner<AAGBaseCharacter>();
+	check(OwningCharacter);
+
+	UBoxComponent* LeftHandCollisionBox = OwningCharacter->GetLeftHandCollisionBox();
+	UBoxComponent* RightHandCollisionBox = OwningCharacter->GetRightHandCollisionBox();
+	check(LeftHandCollisionBox && RightHandCollisionBox);
 	
+	switch (ToggleDamageType)
+	{
+	case EToggleDamageType::LeftHand:
+		
+		if(bShouldEnable)
+		{
+			LeftHandCollisionBox->SetCollisionEnabled(ECollisionEnabled::Type::QueryOnly);
+		}
+		else
+		{
+			LeftHandCollisionBox->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+		}
+		
+		break;
+		
+	case EToggleDamageType::RightHand:
+		
+		if(bShouldEnable)
+		{
+			RightHandCollisionBox->SetCollisionEnabled(ECollisionEnabled::Type::QueryOnly);
+		}
+		else
+		{
+			RightHandCollisionBox->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+		}
+		break;
+		
+	default:
+		break;
+	}
+	
+	if(!bShouldEnable)
+	{
+		OverlappedActors.Empty();
+	}
 }
 
 void UPawnCombatComponent::ToggleWeaponCollision(bool bShouldEnable, EToggleDamageType ToggleDamageType)

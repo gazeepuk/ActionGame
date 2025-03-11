@@ -38,14 +38,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character|Combat")
 	void ToggleWeaponCollision(bool bShouldEnable, EToggleDamageType ToggleDamageType = EToggleDamageType::CurrentEquippedWeapon);
 
+	UFUNCTION(BlueprintCallable, Category = "Character|Combat")
 	virtual void OnHitTargetActor(AActor* HitActor);
+	UFUNCTION(BlueprintCallable, Category = "Character|Combat")
 	virtual void OnWeaponPulledFromTargetActor(AActor* InteractingActor);
 
+	UFUNCTION(BlueprintCallable, Category = "Character|Combat")
+	void ResetOverlappedActors(){ OverlappedActors.Empty(); }
 protected:
 	UPROPERTY()
 	TArray<AActor*> OverlappedActors;
 	
 private:
+	UPROPERTY()
 	TMap<FGameplayTag, AAGWeaponBase*> CharacterCarriedWeaponMap;
 
 	void ToggleCurrentEquippedWeaponCollision(bool bShouldEnable);

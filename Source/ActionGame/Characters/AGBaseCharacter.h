@@ -9,6 +9,7 @@
 #include "Interfaces/PawnUIInterface.h"
 #include "AGBaseCharacter.generated.h"
 
+class UBoxComponent;
 class UPawnUIComponent;
 class UDataAsset_StartUpDataBase;
 class UAGAttributeSet;
@@ -40,6 +41,10 @@ protected:
 	//~ Begin APawn Interface
 	virtual void PossessedBy(AController* NewController) override;
 	//~ End Begin APawn Interface
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AbilitySystem")
 	TObjectPtr<UAGAbilitySystemComponent> AGAbilitySystemComponent;
@@ -53,8 +58,24 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterData")
 	TSoftObjectPtr<UDataAsset_StartUpDataBase> CharacterStartUpData;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	TObjectPtr<UBoxComponent> LeftHandCollisionBox;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat")
+	FName LeftHandCollisionBoneName;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	TObjectPtr<UBoxComponent> RightHandCollisionBox;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat")
+	FName RightHandCollisionBoneName;
+
+	UFUNCTION()
+	void OnHandCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+
 public:
 	FORCEINLINE UAGAbilitySystemComponent* GetAGAbilitySystemComponent() const { return AGAbilitySystemComponent; }
 	FORCEINLINE UAGAttributeSet* GetAGAttributeSet() const { return AGAttributeSet; }
+
+	FORCEINLINE UBoxComponent* GetLeftHandCollisionBox() const {return LeftHandCollisionBox;}
+	FORCEINLINE UBoxComponent* GetRightHandCollisionBox() const {return RightHandCollisionBox;}
 };
 

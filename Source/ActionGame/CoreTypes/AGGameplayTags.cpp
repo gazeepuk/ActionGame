@@ -32,6 +32,8 @@ namespace AGGameplayTags
 	
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_PickUp_Stones, "InputTag.PickUp.Stones");
 	
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Reload, "InputTag.Reload");
+	
 	/** Player Tags **/
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Equip_Axe, "Player.Ability.Equip.Axe");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Equip_Pistol, "Player.Ability.Equip.Pistol");
@@ -74,13 +76,15 @@ namespace AGGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_SwitchTarget_Right, "Player.Event.SwitchTarget.Right");
 	
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_ActivateRage, "Player.Event.ActivateRage");
-	
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_AOE, "Player.Event.AOE");
-	
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_ConsumeStone, "Player.Event.ConsumeStone");
-
+	UE_DEFINE_GAMEPLAY_TAG(Player_Event_Disappear, "Player.Event.Disappear");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Event_Appear, "Player.Event.Appear");
+	
+	
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_Status_JumpToFinisher, "Player.Event.Status.JumpToFinisher");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_Status_Rolling, "Player.Event.Status.Rolling");
+	
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Blocking, "Player.Status.Blocking");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_TargetLock, "Player.Status.TargetLock");
 	
@@ -91,6 +95,11 @@ namespace AGGameplayTags
 
 	UE_DEFINE_GAMEPLAY_TAG(Player_SetByCaller_AttackType_Light, "Player.SetByCaller.AttackType.Light");
 	UE_DEFINE_GAMEPLAY_TAG(Player_SetByCaller_AttackType_Heavy, "Player.SetByCaller.AttackType.Heavy");
+
+	// Ammo
+	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Ammo_Empty, "Player.Status.Ammo.Empty");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Ammo_Reloading, "Player.Status.Ammo.Reloading");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Event_Ammo_Reload, "Player.Event.Ammo.Reload");
 
 	/** Enemy Tags **/
 	UE_DEFINE_GAMEPLAY_TAG(Enemy_Weapon, "Enemy.Weapon");

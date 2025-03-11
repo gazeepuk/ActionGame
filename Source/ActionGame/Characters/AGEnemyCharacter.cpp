@@ -35,16 +35,6 @@ AAGEnemyCharacter::AAGEnemyCharacter()
 
 	EnemyHealthWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyHealthWidgetComponent"));
 	EnemyHealthWidgetComponent->SetupAttachment(GetMesh());
-
-	LeftHandCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("LeftHandCollisionBox"));
-	LeftHandCollisionBox->SetupAttachment(GetMesh());
-	LeftHandCollisionBox->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	LeftHandCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnHandCollisionBoxBeginOverlap);
-	
-	RightHandCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("RightHandCollisionBox"));
-	RightHandCollisionBox->SetupAttachment(GetMesh());
-	RightHandCollisionBox->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	RightHandCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnHandCollisionBoxBeginOverlap);
 }
 
 UPawnCombatComponent* AAGEnemyCharacter::GetPawnCombatComponent() const
@@ -78,34 +68,6 @@ void AAGEnemyCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	InitEnemyStartUpData();
-}
-
-#if WITH_EDITOR
-void AAGEnemyCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-{
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-
-	if(PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(ThisClass, LeftHandCollisionBoneName))
-	{
-		LeftHandCollisionBox->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, LeftHandCollisionBoneName);
-	}
-	else if(PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(ThisClass, RightHandCollisionBoneName))
-	{
-		RightHandCollisionBox->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, RightHandCollisionBoneName);
-	}
-}
-#endif
-
-void AAGEnemyCharacter::OnHandCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                                       UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if(APawn* HitPawn = Cast<APawn>(OtherActor))
-	{
-		if(UAGFunctionLibrary::IsTargetPawnHostile(this, HitPawn))
-		{
-			EnemyCombatComponent->OnHitTargetActor(HitPawn);
-		}
-	}
 }
 
 void AAGEnemyCharacter::InitEnemyStartUpData()
