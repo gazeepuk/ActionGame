@@ -7,6 +7,7 @@
 #include "PawnUIComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPercentChangedDelegate, float, NewPercent);
+
 /**
  * 
  */
@@ -18,5 +19,4 @@ class ACTIONGAME_API UPawnUIComponent : public UPawnExtensionComponentBase
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnPercentChangedDelegate OnCurrentHealthChanged;
-	
 };

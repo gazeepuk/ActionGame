@@ -6,7 +6,6 @@
 #include "PawnUIComponent.h"
 #include "EnemyUIComponent.generated.h"
 
-
 class UAGWidgetBase;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -21,6 +20,5 @@ public:
 	void RemoveEnemyDrawnWidgets();
 	
 private:
-
 	TArray<UAGWidgetBase*> EnemyDrawnWidgets;
 };

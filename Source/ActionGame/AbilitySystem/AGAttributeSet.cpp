@@ -74,13 +74,11 @@ void UAGAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 		const float NewCurrentHealth = FMath::Clamp(OldHealth - DamageDone, 0.f, GetMaxHealth());
 
 		SetCurrentHealth(NewCurrentHealth);
-
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow,
-			FString::Printf(TEXT("Old Health: %f, Damage Taken: %f, NewHealth: %f"),
-				OldHealth, DamageDone, GetCurrentHealth()));
 		
 		PawnUIComponent->OnCurrentHealthChanged.Broadcast(GetCurrentHealth() / GetMaxHealth());
 
+		SetDamageTaken(0.f);
+		
 		if(GetCurrentHealth() == 0.f)
 		{
 			UAGFunctionLibrary::AddGameplayTagToActorIfNone(Data.Target.GetAvatarActor(), AGGameplayTags::Shared_Status_Death);
