@@ -23,6 +23,7 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SwitchTarget(const FGameplayTag& InSwitchDirectionTag);
 private:
+	// Targeting logic
 	void TryLockOnTarget();
 	void GetAvailableActorsToLock();
 	AActor* GetNearestActorFromAvailableActors(const TArray<AActor*>& InAvailableActors) const;
@@ -31,15 +32,18 @@ private:
 	void SetTargetLockWidgetPosition();
 	UFUNCTION(BlueprintCallable)
 	void OnTargetLockTick(float DeltaTime);
-	
+
+	// Input logic
 	void InitTargetLockMovement();
 	void InitTargetLockMappingContext();
-	
+
+	// Clean up 
 	void CancelTargetLockAbility();
 	void CleanUp();
 	void ResetTargetLockMovement();
 	void ResetTargetLockMappingContext();
-	
+
+	// Trace properties
 	UPROPERTY(EditDefaultsOnly, Category = "TargetLock", meta = (UIMin = "0"))
 	float TraceDistance = 5000.f;
 
@@ -51,30 +55,33 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "TargetLock")
 	bool bShowPersistentDebugShape = false;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "TargetLock")
-	TSubclassOf<UAGWidgetBase> TargetLockWidgetClass;
 
+	// Targeting properties
 	UPROPERTY(EditDefaultsOnly, Category = "TargetLock", meta = (UIMin = "0"))
 	float TargetLockRotationInterpSpeed = 5.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "TargetLock", meta = (UIMin = "0"))
 	float TargetLockMaxWalkSpeed = 150.f;
 
+	float CachedDefaultMaxWalkSpeed = 0.f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "TargetLock")
+	float TargetLockCameraOffsetDistance = 20.f;
+
 	UPROPERTY(EditDefaultsOnly, Category = "TargetLock")
 	TObjectPtr<UInputMappingContext> TargetLockMappingContext;
 
-	UPROPERTY(EditDefaultsOnly, Category = "TargetLock")
-	float TargetLockCameraOffsetDistance = 20.f;
-	
+	// Targets
 	UPROPERTY()
 	TArray<AActor*> AvailableActorsToLock;
 
 	UPROPERTY()
 	AActor* CurrentLockedActor;
 
+	// Target Widget
+	UPROPERTY(EditDefaultsOnly, Category = "TargetLock")
+	TSubclassOf<UAGWidgetBase> TargetLockWidgetClass;
+
 	TWeakObjectPtr<UAGWidgetBase> TargetLockWidget;
 	FVector2D TargetLockWidgetSize = FVector2D::ZeroVector;
-
-	float CachedDefaultMaxWalkSpeed = 0.f;
 };

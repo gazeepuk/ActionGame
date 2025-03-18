@@ -28,7 +28,8 @@ void UHeroGameplayAbility_PickUpStone::EndAbility(const FGameplayAbilitySpecHand
 void UHeroGameplayAbility_PickUpStone::CollectStone()
 {
 	CollectedStones.Empty();
-	
+
+	// Trace Stones under Avatar Actor
 	TArray<FHitResult> HitResults;
 	
 	const FVector TraceStart = GetAvatarActorFromActorInfo()->GetActorLocation();
@@ -46,6 +47,7 @@ void UHeroGameplayAbility_PickUpStone::CollectStone()
 		HitResults,
 		true);
 
+	// Adding every traced stone to CollectedStones array
 	for (const FHitResult& HitResult : HitResults)
 	{
 		if(AStonePickUpBase* StonePickUp = Cast<AStonePickUpBase>(HitResult.GetActor()))
@@ -54,6 +56,7 @@ void UHeroGameplayAbility_PickUpStone::CollectStone()
 		}
 	}
 
+	// Cancel ability if traced no stones 
 	if(CollectedStones.IsEmpty())
 	{
 		CancelAbility(CurrentSpecHandle, GetCurrentActorInfo(), GetCurrentActivationInfo(), true);
@@ -62,12 +65,14 @@ void UHeroGameplayAbility_PickUpStone::CollectStone()
 
 void UHeroGameplayAbility_PickUpStone::ConsumeStones()
 {
+	// Cancel ability if there are not any stones to consume 
 	if(CollectedStones.IsEmpty())
 	{
 		CancelAbility(CurrentSpecHandle, GetCurrentActorInfo(), GetCurrentActivationInfo(), true);
 		return;
 	}
 
+	// Consume all traced stones
 	for (AStonePickUpBase* CollectedStone : CollectedStones)
 	{
 		if(CollectedStone)

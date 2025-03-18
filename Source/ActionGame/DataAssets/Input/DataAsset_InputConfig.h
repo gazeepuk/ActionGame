@@ -33,14 +33,15 @@ class ACTIONGAME_API UDataAsset_InputConfig : public UDataAsset
 	GENERATED_BODY()
 
 public:
+	UInputAction* FindNativeInputActionByTag(const FGameplayTag& InInputTag) const;
+	UInputAction* FindAbilityInputActionByTag(const FGameplayTag& InInputTag) const;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (TitleProperty = "InputTag"))
 	TArray<FAGInputActionConfig> NativeInputActions;
-
-	UInputAction* FindNativeInputActionByTag(const FGameplayTag& InInputTag) const;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (TitleProperty = "InputTag"))
 	TArray<FAGInputActionConfig> AbilityInputActions;
+private:
+	UInputAction* FindInputActionByTag(const FGameplayTag& InInputTag, const TArray<FAGInputActionConfig>& InInputActions) const;
 };

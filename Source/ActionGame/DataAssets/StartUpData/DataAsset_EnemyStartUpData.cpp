@@ -14,7 +14,8 @@ void UDataAsset_EnemyStartUpData::GiveToAbilitySystemComponent(UAGAbilitySystemC
 	{
 		return;
 	}
-	
+
+	// Give Enemy Abilities
 	for (const TSubclassOf<UAGEnemyGameplayAbility>& EnemyAbilityClass : EnemyCombatAbilities)
 	{
 		if(!EnemyAbilityClass)

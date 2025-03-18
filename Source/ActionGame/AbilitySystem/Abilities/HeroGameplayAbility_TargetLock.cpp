@@ -44,11 +44,13 @@ void UHeroGameplayAbility_TargetLock::SwitchTarget(const FGameplayTag& InSwitchD
 	GetAvailableActorsToLock();
 
 	AActor* NewTargetToLock = nullptr;
-	
+
+	// Find Available Targets
 	TArray<AActor*> ActorsOnLeft;
 	TArray<AActor*> ActorsOnRight;
 	GetAvailableActorsAroundTarget(ActorsOnLeft, ActorsOnRight);
 
+	// Switch to the new Target
 	if(InSwitchDirectionTag.MatchesTagExact(AGGameplayTags::Player_Event_SwitchTarget_Left))
 	{
 		NewTargetToLock =  GetNearestActorFromAvailableActors(ActorsOnLeft);
@@ -66,6 +68,7 @@ void UHeroGameplayAbility_TargetLock::SwitchTarget(const FGameplayTag& InSwitchD
 
 void UHeroGameplayAbility_TargetLock::TryLockOnTarget()
 {
+	// Find all available targets. Cancel the ability if haven't found any target
 	GetAvailableActorsToLock();
 	if(AvailableActorsToLock.IsEmpty())
 	{
@@ -73,8 +76,10 @@ void UHeroGameplayAbility_TargetLock::TryLockOnTarget()
 		return;
 	}
 
+	// Get the nearest target
 	CurrentLockedActor = GetNearestActorFromAvailableActors(AvailableActorsToLock);
 
+	// Draw Target Widget
 	if(CurrentLockedActor)
 	{
 		DrawTargetLockWidget();
@@ -88,8 +93,10 @@ void UHeroGameplayAbility_TargetLock::TryLockOnTarget()
 
 void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
 {
+	// Clear Available Targets Array 
 	AvailableActorsToLock.Empty();
-	
+
+	// Trace new Targets
 	TArray<FHitResult> BoxTraceHits;
 
 	UKismetSystemLibrary::BoxTraceMultiForObjects(
@@ -106,6 +113,7 @@ void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
 		true
 		);
 
+	// Add traced Targets to the Array
 	for (const FHitResult& HitResult : BoxTraceHits)
 	{
 		if(AActor* HitActor = HitResult.GetActor(); HitActor && HitActor != GetAvatarActorFromActorInfo())
@@ -137,6 +145,7 @@ void UHeroGameplayAbility_TargetLock::GetAvailableActorsAroundTarget(TArray<AAct
 	const FVector PlayerLocation = GetAvatarActorFromActorInfo()->GetActorLocation();
 	const FVector PlayerToCurrentNormalized = (CurrentLockedActor->GetActorLocation() - PlayerLocation).GetSafeNormal();
 
+	// Sort Available Targets based on left or right from player position
 	for (AActor* AvailableActor : AvailableActorsToLock)
 	{
 		if(!AvailableActor || AvailableActor == CurrentLockedActor)
@@ -145,7 +154,7 @@ void UHeroGameplayAbility_TargetLock::GetAvailableActorsAroundTarget(TArray<AAct
 		}
 
 		const FVector PlayerToAvailableNormalized = (AvailableActor->GetActorLocation() - PlayerLocation).GetSafeNormal();
-
+		
 		const FVector CrossProduct = FVector::CrossProduct(PlayerToCurrentNormalized, PlayerToAvailableNormalized);
 		if(CrossProduct.Z > 0.f)
 		{

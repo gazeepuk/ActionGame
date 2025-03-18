@@ -14,6 +14,7 @@ void UAGGameplayAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInf
 {
 	Super::OnGiveAbility(ActorInfo, Spec);
 
+	// Activates ability with OnGiven activation policy
 	if (AbilityActivationPolicy == EAGAbilityActivationPolicy::OnGiven)
 	{
 		if (ActorInfo && !Spec.IsActive())
@@ -28,6 +29,7 @@ void UAGGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, con
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
+	// Remove ability with OnGiven activation policy
 	if (AbilityActivationPolicy == EAGAbilityActivationPolicy::OnGiven)
 	{
 		if (ActorInfo)
@@ -103,9 +105,12 @@ void UAGGameplayAbility::ApplyGameplayEffectSpecHandleToHitResults(const FGamepl
 	{
 		if(APawn* HitPawn = Cast<APawn>(HitResult.GetActor()))
 		{
+			// Apply EffectSpecHandle on Target HitActor if it's Hostile 
 			if(UAGFunctionLibrary::IsTargetPawnHostile(OwningPawn, HitPawn) && bTargetHostile)
 			{
 				FActiveGameplayEffectHandle ActiveGameplayEffectHandle = UAGFunctionLibrary::ApplyGameplayEffectSpecHandleToTargetActor(OwningPawn, HitPawn, InSpecHandle);
+
+				// Send HitReact GameplayEvent if the Effect applied successfully
 				if(ActiveGameplayEffectHandle.WasSuccessfullyApplied())
 				{
 					FGameplayEventData Data;

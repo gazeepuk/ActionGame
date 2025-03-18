@@ -7,6 +7,7 @@
 #include "Characters/AGEnemyCharacter.h"
 #include "Engine/AssetManager.h"
 #include "Engine/TargetPoint.h"
+#include "FunctionLibraries/AGFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
 void AAGWaveSurvivalGameMode::RegisterSpawnedEnemy(const TArray<AAGEnemyCharacter*>& InEnemiesToRegister)
@@ -19,6 +20,18 @@ void AAGWaveSurvivalGameMode::RegisterSpawnedEnemy(const TArray<AAGEnemyCharacte
 
 			EnemyToRegister->OnDestroyed.AddUniqueDynamic(this, &ThisClass::AAGWaveSurvivalGameMode::OnEnemyDestroyed);
 		}
+	}
+}
+
+void AAGWaveSurvivalGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+
+	EAGGameDifficulty SavedGameDifficulty;
+
+	if(UAGFunctionLibrary::TryLoadCurrentGameDifficulty(SavedGameDifficulty))
+	{
+		CurrentGameDifficulty = SavedGameDifficulty;
 	}
 }
 

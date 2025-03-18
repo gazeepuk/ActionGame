@@ -28,6 +28,7 @@ FGameplayEffectSpecHandle UAGEnemyGameplayAbility::MakeEnemyDamageEffectSpecHand
 {
 	check(EffectClass);
 
+	// Setup Avatar Actor as Instigator and Source Object for Damage Effect Spec Handle
 	FGameplayEffectContextHandle ContextHandle = GetAGAbilitySystemComponentFromAvatarActor()->MakeEffectContext();
 	ContextHandle.SetAbility(this);
 	ContextHandle.AddSourceObject(GetAvatarActorFromActorInfo());
@@ -35,6 +36,7 @@ FGameplayEffectSpecHandle UAGEnemyGameplayAbility::MakeEnemyDamageEffectSpecHand
 	
 	FGameplayEffectSpecHandle EffectSpecHandle = GetAGAbilitySystemComponentFromAvatarActor()->MakeOutgoingSpec(EffectClass, GetAbilityLevel(), ContextHandle);
 
+	// Set Damage SetByCaller value
 	EffectSpecHandle.Data->SetSetByCallerMagnitude(AGGameplayTags::Shared_SetByCaller_BaseDamage, InDamageScalableFloat.GetValueAtLevel(GetAbilityLevel()));
 		
 	return  EffectSpecHandle;

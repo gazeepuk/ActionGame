@@ -12,6 +12,7 @@
 AAGAIController::AAGAIController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>("PathFollowingComponent"))
 {
+	// Set up AI's Sight 
 	AISenseConfig_Sight = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("AISenseConfig_Sight"));
 	AISenseConfig_Sight->DetectionByAffiliation.bDetectEnemies = true;
 	AISenseConfig_Sight->DetectionByAffiliation.bDetectFriendlies = false;
@@ -19,12 +20,14 @@ AAGAIController::AAGAIController(const FObjectInitializer& ObjectInitializer)
 	AISenseConfig_Sight->SightRadius = 5000.f;
 	AISenseConfig_Sight->LoseSightRadius = 0.f;
 	AISenseConfig_Sight->PeripheralVisionAngleDegrees = 360.f;
-	
+
+	// Set up Perception Component
 	EnemyPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("EnemyPerceptionComponent"));
 	EnemyPerceptionComponent->ConfigureSense(*AISenseConfig_Sight);
 	EnemyPerceptionComponent->SetDominantSense(UAISenseConfig_Sight::StaticClass());
 	EnemyPerceptionComponent->OnTargetPerceptionUpdated.AddUniqueDynamic(this, &ThisClass::OnEnemyPerceptionUpdated);
 
+	// Set Enemy's Team ID
 	AAGAIController::SetGenericTeamId(FGenericTeamId(1));
 }
 
@@ -71,7 +74,8 @@ void AAGAIController::OnEnemyPerceptionUpdated(AActor* Actor, FAIStimulus Stimul
 	{
 		return;
 	}
-	
+
+	// Set Enemy's Target  
 	if(!BlackboardComponent->GetValueAsObject(FName("TargetActor")))
 	{
 		if(Stimulus.WasSuccessfullySensed() && Actor)

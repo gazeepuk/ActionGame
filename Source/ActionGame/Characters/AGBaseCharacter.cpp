@@ -59,6 +59,7 @@ void AAGBaseCharacter::PossessedBy(AController* NewController)
 	}
 }
 
+// Attach Hands' collisions in Editor
 #if WITH_EDITOR
 void AAGBaseCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {

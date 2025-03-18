@@ -37,6 +37,7 @@ FGameplayEffectSpecHandle UAGHeroGameplayAbility::MakeHeroDamageEffectSpecHandle
 {
 	check(EffectClass);
 
+	// Set Hero as ContextHandle's Source and Instigator
 	FGameplayEffectContextHandle ContextHandle = GetAGAbilitySystemComponentFromAvatarActor()->MakeEffectContext();
 	ContextHandle.SetAbility(this);
 	ContextHandle.AddSourceObject(GetAvatarActorFromActorInfo());
@@ -44,6 +45,7 @@ FGameplayEffectSpecHandle UAGHeroGameplayAbility::MakeHeroDamageEffectSpecHandle
 	
 	FGameplayEffectSpecHandle EffectSpecHandle = GetAGAbilitySystemComponentFromAvatarActor()->MakeOutgoingSpec(EffectClass, GetAbilityLevel(), ContextHandle);
 
+	// Set Damage SetByCaller value
 	EffectSpecHandle.Data->SetSetByCallerMagnitude(AGGameplayTags::Shared_SetByCaller_BaseDamage, InWeaponBaseDamage);
 	if(InCurrentAttackTypeTag.IsValid())
 	{

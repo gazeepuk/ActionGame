@@ -26,6 +26,7 @@ protected:
 	void ConsumeStones();
 	
 private:
+	// Tracing properties
 	UPROPERTY(EditDefaultsOnly)
 	float TraceDistance;
 	UPROPERTY(EditDefaultsOnly)
@@ -34,6 +35,7 @@ private:
 	TArray<TEnumAsByte<EObjectTypeQuery>> StoneTraceChannel;
 	UPROPERTY(EditDefaultsOnly)
 	bool bDrawDebug;
+	
 	UPROPERTY()
 	TArray<AStonePickUpBase*> CollectedStones;
 };

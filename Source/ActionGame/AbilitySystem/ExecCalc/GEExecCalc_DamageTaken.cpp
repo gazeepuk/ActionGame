@@ -43,6 +43,7 @@ void UGEExecCalc_DamageTaken::Execute_Implementation(const FGameplayEffectCustom
 	EvaluateParameters.SourceTags = EffectSpec.CapturedSourceTags.GetAggregatedTags();
 	EvaluateParameters.TargetTags = EffectSpec.CapturedTargetTags.GetAggregatedTags();
 
+	// Capture All Attributes for Damage Calculations 
 	float SourceAttackPower = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(GetAGDamageCapture().AttackPowerDef, EvaluateParameters,
 	                                                           SourceAttackPower);
@@ -73,6 +74,7 @@ void UGEExecCalc_DamageTaken::Execute_Implementation(const FGameplayEffectCustom
 		}
 	}
 
+	// Increase Damage based on Light Attack combo count
 	if (UsedLightAttackComboAttack != 0.f)
 	{
 		const float DamageIncreasePercentLight = (UsedLightAttackComboAttack - 1) * 0.05f + 1.f;
@@ -80,6 +82,7 @@ void UGEExecCalc_DamageTaken::Execute_Implementation(const FGameplayEffectCustom
 		BaseDamage *= DamageIncreasePercentLight;
 	}
 
+	// Increase Damage based on Heavy Attack combo count
 	if (UsedHeavyAttackComboAttack != 0.f)
 	{
 		const float DamageIncreasePercentHeavy = UsedHeavyAttackComboAttack * 0.15f + 1.f;
@@ -87,6 +90,7 @@ void UGEExecCalc_DamageTaken::Execute_Implementation(const FGameplayEffectCustom
 		BaseDamage *= DamageIncreasePercentHeavy;
 	}
 
+	// Final Damage
 	const float FinalDamageDone = BaseDamage * SourceAttackPower / TargetDefensePower;
 	
 	if (FinalDamageDone > 0.f)

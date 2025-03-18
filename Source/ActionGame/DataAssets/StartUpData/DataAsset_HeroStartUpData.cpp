@@ -10,6 +10,7 @@ void UDataAsset_HeroStartUpData::GiveToAbilitySystemComponent(UAGAbilitySystemCo
 {
 	Super::GiveToAbilitySystemComponent(InASCToGive, ApplyLevel);
 
+	// Give Hero Abilities 
 	for (const FAGHeroAbilitySet& AbilitySet : HeroStartUpAbilitySet)
 	{
 		if(!AbilitySet.IsValid())

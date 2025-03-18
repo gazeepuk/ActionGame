@@ -34,6 +34,7 @@ protected:
 	virtual void OnEnemyPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
 
 private:
+	// CrowdFollowingComponent properties 
 	UPROPERTY(EditDefaultsOnly, Category = "Detour Crowd Avoidance")
 	bool bEnableDetourCrowdAvoidance = true;
 	UPROPERTY(EditDefaultsOnly, Category = "Detour Crowd Avoidance", meta = (EditCondition = "bEnableDetourCrowdAvoidance", UIMin = "1", UIMax = "4"))

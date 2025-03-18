@@ -7,8 +7,13 @@
 #include "AbilitySystem/AGAbilitySystemComponent.h"
 #include "CoreTypes/AGCountDownAction.h"
 #include "CoreTypes/AGGameplayTags.h"
+#include "DataAssets/Input/DataAsset_InputConfig.h"
+#include "GameFramework/SaveGame.h"
 #include "Interfaces/PawnCombatInterface.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "GameInstances/AGGameInstance.h"
+#include "Kismet/GameplayStatics.h"
+#include "SaveGame/AGSaveGame.h"
 
 UAGAbilitySystemComponent* UAGFunctionLibrary::NativeGetAGAbilitySystemComponentFromActor(AActor* InActor)
 {
@@ -72,6 +77,7 @@ UPawnCombatComponent* UAGFunctionLibrary::BP_GetPawnCombatComponentFromActor(AAc
 
 bool UAGFunctionLibrary::IsTargetPawnHostile(const APawn* QueryPawn, const APawn* TargetPawn)
 {
+	// Check Team ID to calculate if Target is Hostile
 	IGenericTeamAgentInterface* QueryTeamAgent = Cast<IGenericTeamAgentInterface>(QueryPawn->GetController());
 	IGenericTeamAgentInterface* TargetTeamAgent = Cast<IGenericTeamAgentInterface>(TargetPawn->GetController());
 
@@ -96,6 +102,7 @@ FGameplayTag UAGFunctionLibrary::ComputeHitReactDirectionTag(const AActor* InAtt
 	const FVector VictimForward	= InVictim->GetActorForwardVector();
 	const FVector VictimToAttackerNormalized = (InAttacker->GetActorLocation() - InVictim->GetActorLocation()).GetSafeNormal();
 
+	// Compute Dot and Cross products to find angle between Attacker and Victim in degrees
 	const float DotResult = FVector::DotProduct(VictimForward, VictimToAttackerNormalized);
 	OutAngleDifference = UKismetMathLibrary::DegAcos(DotResult);
 
@@ -183,5 +190,88 @@ void UAGFunctionLibrary::CountDown(const UObject* WorldContextObject, float Tota
 			FoundAction->CancelAction();
 		}
 	}
+}
+
+UInputAction* UAGFunctionLibrary::GetAbilityInputActionByTagFromInputConfigDataAsset(
+	const UDataAsset_InputConfig* InInputConfigDataAsset, const FGameplayTag& InGameplayTag)
+{
+	return InInputConfigDataAsset->FindAbilityInputActionByTag(InGameplayTag);
+}
+
+UAGGameInstance* UAGFunctionLibrary::GetAGGameInstance(const UObject* WorldContextObject)
+{
+	if(GEngine)
+	{
+		if(const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+		{
+			return World->GetGameInstance<UAGGameInstance>();
+		}
+	}
+
+	return nullptr;
+}
+
+void UAGFunctionLibrary::ToggleInputMode(const UObject* WorldContextObject, EAGInputMode InInputMode)
+{
+	APlayerController* PlayerController = nullptr;
+	if(GEngine)
+	{
+		if(const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+		{
+			PlayerController = World->GetFirstPlayerController();
+		}
+	}
+
+	if(!PlayerController)
+	{
+		return;
+	}
+
+	FInputModeGameOnly InputModeGameOnly;
+	FInputModeUIOnly InputModeUIOnly;
+	
+	switch (InInputMode)
+	{
+	case EAGInputMode::GameOnly:
+		PlayerController->SetInputMode(InputModeGameOnly);
+		PlayerController->bShowMouseCursor = false;
+		break;
+		
+	case EAGInputMode::UIOnly:
+		PlayerController->SetInputMode(InputModeUIOnly);
+		PlayerController->bShowMouseCursor = true;
+		break;
+		
+	default:
+		break;
+	}
+}
+
+void UAGFunctionLibrary::SaveCurrentGameDifficulty(EAGGameDifficulty InGameDifficulty)
+{
+	USaveGame* SaveGame = UGameplayStatics::CreateSaveGameObject(UAGSaveGame::StaticClass());
+
+	if(UAGSaveGame* AGSaveGame = Cast<UAGSaveGame>(SaveGame))
+	{
+		AGSaveGame->SaveGameDifficulty = InGameDifficulty;
+
+		UGameplayStatics::SaveGameToSlot(AGSaveGame, AGGameplayTags::GameData_Save_Slot_1.GetTag().ToString(), 0);
+	}
+}
+
+bool UAGFunctionLibrary::TryLoadCurrentGameDifficulty(EAGGameDifficulty& OutGameDifficulty)
+{
+	if(UGameplayStatics::DoesSaveGameExist(AGGameplayTags::GameData_Save_Slot_1.GetTag().ToString(), 0))
+	{
+		USaveGame* SaveGame = UGameplayStatics::LoadGameFromSlot(AGGameplayTags::GameData_Save_Slot_1.GetTag().ToString(), 0);
+		if(UAGSaveGame* AGSaveGame = Cast<UAGSaveGame>(SaveGame))
+		{
+			OutGameDifficulty = AGSaveGame->SaveGameDifficulty;
+			return true;
+		}
+	}
+
+	OutGameDifficulty = EAGGameDifficulty::Easy;
+	return false;
 }
 

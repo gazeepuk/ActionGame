@@ -12,8 +12,10 @@ void UPawnCombatComponent::RegisterSpawnedWeapon(FGameplayTag InWeaponTagToRegis
 	checkf(!CharacterCarriedWeaponMap.Contains(InWeaponTagToRegister), TEXT("%s has been already added as carried weapon"), *InWeaponTagToRegister.ToString());
 	check(InWeaponToRegister);
 
+	// Add Registered Weapon to TMap
 	CharacterCarriedWeaponMap.Emplace(InWeaponTagToRegister, InWeaponToRegister);
 
+	// Subscribe to Registered Weapon's delagates
 	InWeaponToRegister->OnWeaponHitTarget.AddDynamic(this, &ThisClass::OnHitTargetActor);
 	InWeaponToRegister->OnWeaponPulledFromTarget.AddDynamic(this, &ThisClass::OnWeaponPulledFromTargetActor);
 	
@@ -70,7 +72,8 @@ void UPawnCombatComponent::ToggleHandsCollisions(bool bShouldEnable, EToggleDama
 	UBoxComponent* LeftHandCollisionBox = OwningCharacter->GetLeftHandCollisionBox();
 	UBoxComponent* RightHandCollisionBox = OwningCharacter->GetRightHandCollisionBox();
 	check(LeftHandCollisionBox && RightHandCollisionBox);
-	
+
+	// Toggle hands' collisions 
 	switch (ToggleDamageType)
 	{
 	case EToggleDamageType::LeftHand:

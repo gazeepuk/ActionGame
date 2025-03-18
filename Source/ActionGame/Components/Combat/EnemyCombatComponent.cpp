@@ -18,7 +18,8 @@ void UEnemyCombatComponent::OnHitTargetActor(AActor* HitActor)
 	}
 
 	OverlappedActors.AddUnique(HitActor);
-	
+
+	// Validate player's block 
 	bool bIsValidBlock = false;
 
 	const bool bIsPlayerBlocking = UAGFunctionLibrary::NativeDoesActorHaveTag(HitActor, AGGameplayTags::Player_Status_Blocking);
